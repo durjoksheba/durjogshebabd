@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>দুর্যোগ সেবা</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f8f6;--cd:#fff;--tx:#172a25;--mu:#64756f;--bd:#e1e9e5;--pr:#0b5d4b;--pt:#fff;--dn:#b42332;--ok:#16815d;--wn:#d97706;--bl:#2467a6;--sf:#e9f4ef}
+:root[data-theme=dark]{--bg:#0c1714;--cd:#142520;--tx:#e4efeb;--mu:#93a8a1;--bd:#244037;--pr:#3fb58f;--pt:#06231b;--dn:#ff7f8a;--ok:#5fd0a0;--wn:#f2b84b;--bl:#6db3f2;--sf:#1b332b}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "Noto Sans Bengali",Inter,system-ui,sans-serif}
+button{font:inherit;cursor:pointer;border-radius:11px;border:1px solid var(--bd);background:var(--cd);color:var(--tx);padding:9px 14px;font-weight:700}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--wn);outline-offset:2px}
+.pb{background:var(--pr);color:var(--pt);border-color:var(--pr)}.dg{background:var(--dn);border-color:var(--dn);color:#fff}.wide{width:100%;margin-top:8px}
+.sm,.chip{padding:6px 11px;font-size:12px;border-radius:999px;color:var(--mu)}.chip.on{background:var(--sf);border-color:var(--pr);color:var(--pr)}
+.top{position:sticky;top:0;z-index:1000;height:66px;background:var(--cd);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 max(16px,calc((100% - 1240px)/2))}
+.br{display:flex;gap:10px;align-items:center;font-weight:800;font-size:19px;line-height:1.2}.br small{display:block;font-size:11px;color:var(--mu);font-weight:600}
+.logo{background:var(--pr);color:var(--pt);border-radius:12px;width:40px;height:40px;display:grid;place-items:center;font-size:22px}
+.nav{display:flex;gap:8px}.wrap{max-width:1240px;margin:auto;padding:22px 16px 40px}
+.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:16px}
+.ey{color:var(--pr);font-size:12px;font-weight:800}.hero h1{font-size:clamp(28px,4vw,42px);line-height:1.2;margin:6px 0}.hero p{color:var(--mu);margin:0;max-width:640px}
+.pill{border:1px solid var(--wn);border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700;color:var(--wn)}
+#al{display:grid;gap:8px;margin-bottom:14px}
+.a{padding:10px 14px;border-radius:12px;background:var(--cd);border:1px solid var(--bd);border-left:6px solid var(--wn)}.a.hi{border-left-color:var(--dn)}
+.dm{font-size:12px;color:var(--mu)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.stat,.panel{background:var(--cd);border:1px solid var(--bd);border-radius:16px}.stat{padding:14px 16px}.stat .l{font-size:12px;color:var(--mu);font-weight:600}.stat .v{font-size:28px;font-weight:800;line-height:1.3}
+.layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(320px,.85fr);gap:16px;align-items:start}.side{display:flex;flex-direction:column;gap:16px}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid var(--bd)}.ph h2{margin:0;font-size:16px}.pbody{padding:14px 16px}
+.mw{padding:12px}#map{position:relative;z-index:1;height:440px;border-radius:12px;border:1px solid var(--bd)}
+[data-theme=dark] .leaflet-tile{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9)}
+.lg{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 4px 0;font-size:12px;color:var(--mu)}.lg div{display:flex;align-items:center;gap:6px}.sw{width:11px;height:11px;border-radius:50%;flex:none}
+.fl{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px;border-bottom:1px solid var(--bd)}
+#pl{padding:0 16px;max-height:380px;overflow:auto}.it{padding:12px 0;border-bottom:1px solid var(--bd)}.it:last-child{border:0}.it h3{margin:2px 0 8px}
+.cat{font-size:12px;font-weight:800}.cat.ws{color:var(--ok)}.cat.wu{color:var(--dn)}.cat.sh{color:var(--bl)}.cat.hg{color:var(--wn)}
+h3{margin:0 0 6px;font-size:14px}.rq{border-top:1px solid var(--bd);padding:8px 0}.rq small{color:var(--mu);display:block}
+.ban{margin:16px 0;background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:14px 16px;font-size:13px}.ban strong{display:block;margin-bottom:2px}
+footer{color:var(--mu);font-size:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+dialog{border:1px solid var(--bd);border-radius:18px;background:var(--cd);color:var(--tx);width:min(500px,94vw);padding:20px}
+dialog::backdrop{background:rgba(8,24,19,.7)}
+label{display:block;margin:10px 0 4px;font-weight:700;font-size:13px}
+input,select,textarea{width:100%;font:inherit;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
+.ch{display:flex;flex-wrap:wrap;gap:8px}.ch label{display:flex;gap:6px;align-items:center;margin:0;padding:8px 12px;border:1px solid var(--bd);border-radius:20px;font-weight:400}
+.ch input{width:auto}.row{display:flex;gap:8px;margin-top:14px}.row button{flex:1}
+#ts{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--pr);color:var(--pt);padding:11px 16px;border-radius:12px;max-width:90vw;display:none;z-index:9999}
+.er{color:var(--dn);font-size:14px;min-height:20px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.hero{flex-direction:column;align-items:flex-start}#map{height:380px}}
+@media(max-width:600px){.top{height:60px}.br small{display:none}#map{height:340px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="br"><div class="logo">দ</div><div><span data-i="name"></span><small data-i="tag"></small></div></div>
+<nav class="nav"><button id="lb"></button><button id="tb"></button><button class="pb" id="bh" data-i="help"></button></nav></header>
+<main class="wrap">
+<section class="hero"><div><div class="ey" data-i="ey"></div><h1 data-i="h1"></h1><p data-i="sub"></p></div><div class="pill" data-i="demo"></div></section>
+<section id="al"></section>
+<section class="stats">
+<div class="stat"><div class="l" id="sl0"></div><div class="v" id="s0"></div></div>
+<div class="stat"><div class="l" id="sl1"></div><div class="v" id="s1"></div></div>
+<div class="stat"><div class="l" id="sl2"></div><div class="v" id="s2"></div></div>
+<div class="stat"><div class="l" id="sl3"></div><div class="v" id="s3"></div></div>
+</section>
+<div class="layout">
+<section class="panel"><div class="ph"><div><h2 data-i="mapT"></h2><div class="dm" data-i="mapS"></div></div></div>
+<div class="mw"><div id="map" role="application"></div><div class="lg" id="lg"></div></div></section>
+<div class="side">
+<section class="panel"><div class="ph"><div><h2 data-i="plT"></h2><div class="dm" data-i="plS"></div></div><b id="cnt"></b></div><div class="fl" id="fl"></div><div id="pl"></div></section>
+<section class="panel"><div class="ph"><h2 data-i="volT"></h2></div><div class="pbody">
+<div id="pv"><p class="dm" data-i="volP"></p><button class="pb wide" id="bv" data-i="vol"></button><button class="wide" id="bl" data-i="login"></button></div>
+<div id="vp" hidden>
+<h3 data-i="mySec"></h3><div id="vs"></div>
+<h3 style="margin-top:12px" data-i="myTeam"></h3><div id="vt"></div>
+<h3 style="margin-top:12px" data-i="addPt"></h3>
+<select id="nt"></select>
+<button class="wide" id="ba" data-i="addGo"></button>
+<div class="dm" id="ah"></div>
+<h3 style="margin-top:12px" data-i="reqs"></h3><div id="rl"></div>
+<button class="wide" id="bo" data-i="logout"></button>
+</div></div></section>
+</div></div>
+<div class="ban"><strong data-i="emg"></strong><span data-i="ban"></span></div>
+<footer><span><span data-i="name"></span> © 2026</span><span data-i="ft"></span></footer>
+</main>
+
+<dialog id="hd">
+<h3 data-i="hT"></h3>
+<div class="ch">
+<label><input type="radio" name="ht" value="med" checked><span data-i="med"></span></label>
+<label><input type="radio" name="ht" value="food"><span data-i="food"></span></label>
+<label><input type="radio" name="ht" value="other"><span data-i="other"></span></label>
+</div>
+<textarea id="hn" rows="3" hidden data-p="otherPh"></textarea>
+<label data-i="loc"></label>
+<button id="gl" data-i="getLoc"></button> <span id="ls" class="dm"></span>
+<input id="lt" style="margin-top:8px" data-p="locHint">
+<label data-i="phOpt"></label>
+<input id="hp" type="tel" inputmode="tel">
+<div class="er" id="he"></div>
+<div class="row"><button id="hc" data-i="cancel"></button><button class="pb dg" id="hs" data-i="send"></button></div>
+</dialog>
+
+<dialog id="vd">
+<h3 data-i="vT"></h3>
+<label data-i="fn"></label><input id="vn" autocomplete="name">
+<label data-i="ad"></label><input id="va" autocomplete="street-address">
+<label data-i="ph"></label><input id="vph" type="tel" inputmode="tel">
+<label data-i="gm"></label><input id="vm" type="email">
+<label data-i="dt"></label>
+<select id="vdt"><option value="nid" data-i="nid"></option><option value="birth" data-i="birth"></option></select>
+<label data-i="du"></label><input id="vf" type="file" accept="image/jpeg,image/png,image/webp">
+<div class="dm" data-i="dn"></div>
+<div class="er" id="ve"></div>
+<div class="row"><button id="vc" data-i="cancel"></button><button class="pb" id="vs2" data-i="apply"></button></div>
+</dialog>
+<dialog id="ld">
+<h3 data-i="enter"></h3>
+<label data-i="em"></label><input id="lm" type="email" autocomplete="username">
+<label data-i="pw"></label><input id="lp" type="password" autocomplete="current-password">
+<div class="er" id="le"></div>
+<div class="row"><button id="lc" data-i="cancel"></button><button class="pb" id="ls2" data-i="enter"></button></div>
+</dialog>
+<div id="ts" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+/* DEMO MODE: all data below lives in memory. Replace the arrays with Supabase queries
+   (tables: help_requests, map_points, sectors, teams, volunteer_applications) when wiring the backend. */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+let flt="all";
+const T={
+bn:{name:"দুর্যোগ সেবা",tag:"দুর্যোগে পাশে আছি",help:"সাহায্য চাই",vol:"স্বেচ্ছাসেবী হোন",login:"স্বেচ্ছাসেবী প্রবেশ (ডেমো)",logout:"বের হোন",
+emg:"প্রাণসংশয় হলে সরাসরি ৯৯৯-এ কল করুন।",demo:"ডেমো মোড: এখানকার সব তথ্য নমুনা, শুধু এই পেজে থাকে।",alerts:"সতর্কবার্তা",
+ws:"নিরাপদ নলকূপ বা কূপ",wu:"অনিরাপদ, পান করবেন না",sh:"আশ্রয়কেন্দ্র",hg:"উঁচু নিরাপদ স্থান",rq:"সাহায্যের অনুরোধ",
+hT:"কী সাহায্য দরকার?",med:"জরুরি চিকিৎসা",food:"খাবার ও বিশুদ্ধ পানি",other:"অন্যান্য",otherPh:"আপনার প্রয়োজনের কথা লিখুন",
+loc:"আপনার অবস্থান",getLoc:"আমার অবস্থান পাঠান",locOk:"অবস্থান পাওয়া গেছে ✔",locHint:"কোথায় আছেন তার বিবরণ, যেমন চেনা দোকান বা মসজিদ (ঐচ্ছিক)",
+phOpt:"ফোন নম্বর (ঐচ্ছিক, ফিরতি কলের জন্য)",send:"অনুরোধ পাঠান",cancel:"বাতিল",locNeed:"স্বেচ্ছাসেবীরা পৌঁছাতে পারবেন, তাই আগে অবস্থান পাঠান।",
+locFail:"অবস্থান পাওয়া যায়নি। ফোনের লোকেশন চালু আছে কি না দেখুন।",otherNeed:"কী সাহায্য দরকার তা লিখুন।",sent:"অনুরোধ পাঠানো হয়েছে। স্বেচ্ছাসেবীরা যোগাযোগ করবেন।",
+vT:"স্বেচ্ছাসেবী নিবন্ধন",fn:"পূর্ণ নাম",ad:"ঠিকানা",ph:"মোবাইল নম্বর",gm:"জিমেইল (ঐচ্ছিক)",dt:"পরিচয়পত্রের ধরন",nid:"জাতীয় পরিচয়পত্র (এনআইডি)",birth:"জন্মনিবন্ধন সনদ",
+du:"পরিচয়পত্রের স্পষ্ট ছবি",dn:"ছবিটি শুধু অ্যাডমিনের যাচাইয়ের জন্য, অন্য কেউ দেখতে পাবে না।",apply:"আবেদন জমা দিন",
+vErr:"সব প্রয়োজনীয় ঘর পূরণ করুন এবং ছবি দিন।",pErr:"সঠিক বাংলাদেশি মোবাইল নম্বর দিন।",vSent:"আবেদন জমা হয়েছে। যাচাইয়ের পর অ্যাডমিন জানাবেন।",
+mySec:"আপনার সেক্টর",myTeam:"আপনার টিম",leader:"দলনেতা",mem:"জন সদস্য",addPt:"নতুন স্থান যোগ করুন",addGo:"ম্যাপে স্থান বসান",addHint:"ম্যাপে যেখানে বসাতে চান সেখানে ট্যাপ করুন।",
+reqs:"সাহায্যের অনুরোধ",none:"এখন কোনো অনুরোধ নেই।",mark:"সাহায্য পৌঁছেছে",done:"সাহায্য পৌঁছেছে ✔",del:"মুছুন",asName:"স্থানের নাম বা বিবরণ",
+shared:"অবস্থান পাঠানো হয়েছে",noPh:"ফোন দেওয়া নেই",enter:"প্রবেশ করুন",em:"ইমেইল",pw:"পাসওয়ার্ড",loginErr:"ইমেইল বা পাসওয়ার্ড ভুল।",noRole:"এই অ্যাকাউন্টে স্বেচ্ছাসেবীর অনুমতি নেই। অ্যাডমিনের সাথে যোগাযোগ করুন।",err:"সংযোগে সমস্যা হয়েছে। আবার চেষ্টা করুন।",ey:"স্থানীয় তথ্য। সম্মিলিত উদ্যোগ।",h1:"দুর্যোগে, সবাই একসাথে।",sub:"সতর্কবার্তা, নিরাপদ পানি ও আশ্রয়ের তথ্য, আর সাহায্যের জন্য স্বেচ্ছাসেবীদের সাথে যোগাযোগ, সব এক জায়গায়।",mapT:"ম্যাপ দেখুন",mapS:"চিহ্নে চাপলে বিস্তারিত দেখা যাবে",plT:"নিরাপদ স্থান ও উৎস",plS:"পানি, আশ্রয়কেন্দ্র ও উঁচু স্থান",volT:"স্বেচ্ছাসেবী সমন্বয়",volP:"স্বেচ্ছাসেবী হয়ে নিজের এলাকার মানুষের পাশে দাঁড়ান। যাচাইয়ের পর আপনি নিজের সেক্টরের অনুরোধ দেখতে পারবেন।",ban:"এই সাইট জরুরি সেবা, হাসপাতাল বা সরকারি সতর্কবার্তার বিকল্প নয়। যাচাই না হওয়া তথ্যকে নিশ্চিত ধরবেন না। বাড়ির ঠিকানা বা স্পর্শকাতর ব্যক্তিগত তথ্য প্রকাশ্যে লিখবেন না।",all:"সব",viewMap:"ম্যাপে দেখুন",noPts:"এখনো কোনো স্থান যোগ হয়নি।",ft:"ম্যাপ © OpenStreetMap contributors"},
+en:{name:"Durjog Seba",tag:"Standing by you in a disaster",help:"Request help",vol:"Become a volunteer",login:"Volunteer login (demo)",logout:"Log out",
+emg:"If life is in danger, call 999 directly.",demo:"Demo mode: everything here is sample data and stays on this page only.",alerts:"Alerts",
+ws:"Safe well or tube well",wu:"Unsafe, do not drink",sh:"Shelter",hg:"High ground",rq:"Help request",
+hT:"What help do you need?",med:"Medical emergency",food:"Food and clean water",other:"Something else",otherPh:"Tell us what you need",
+loc:"Your location",getLoc:"Share my location",locOk:"Location captured ✔",locHint:"Where exactly are you? A known shop or mosque helps (optional)",
+phOpt:"Phone (optional, so volunteers can call back)",send:"Send request",cancel:"Cancel",locNeed:"Share your location first so volunteers can find you.",
+locFail:"Could not get your location. Check that location is turned on.",otherNeed:"Please describe what you need.",sent:"Request sent. Volunteers will contact you.",
+vT:"Volunteer registration",fn:"Full name",ad:"Address",ph:"Mobile number",gm:"Gmail (optional)",dt:"ID document type",nid:"National ID (NID)",birth:"Birth certificate",
+du:"Clear photo of the document",dn:"Only admins use this photo to verify you. No one else can see it.",apply:"Submit application",
+vErr:"Fill in all required fields and add the photo.",pErr:"Enter a valid Bangladeshi mobile number.",vSent:"Application submitted. An admin will review it and get back to you.",
+mySec:"Your sector",myTeam:"Your team",leader:"Team leader",mem:"members",addPt:"Add a place",addGo:"Place it on the map",addHint:"Tap the map where you want to place it.",
+reqs:"Help requests",none:"No requests right now.",mark:"Mark as helped",done:"Helped ✔",del:"Delete",asName:"Name or details of the place",
+shared:"Location shared",noPh:"No phone given",enter:"Log in",em:"Email",pw:"Password",loginErr:"Wrong email or password.",noRole:"This account has no volunteer access. Contact an admin.",err:"Connection problem. Please try again.",ey:"Local information. Shared action.",h1:"Together through every disaster.",sub:"Alerts, safe water and shelter information, and a way to reach volunteers, all in one place.",mapT:"Explore the map",mapS:"Select a marker to see details",plT:"Safe places and sources",plS:"Water, shelters and high ground",volT:"Volunteer coordination",volP:"Volunteer to stand by people in your area. After verification you can see requests in your own sector.",ban:"This site is not an emergency service, hospital or official warning system. Do not treat unverified information as confirmed. Do not post home addresses or sensitive personal details publicly.",all:"All",viewMap:"View on map",noPts:"No places added yet.",ft:"Map © OpenStreetMap contributors"}};
+let ALERTS=[{s:"hi",bn:"ঘূর্ণিঝড়ের সতর্কতা: উপকূলের মানুষ আশ্রয়কেন্দ্রে যান।",en:"Cyclone warning: people on the coast, move to a shelter."},
+{s:"md",bn:"নদীর পানি বাড়ছে: নিচু এলাকার বাসিন্দারা সতর্ক থাকুন।",en:"Rivers are rising: residents of low-lying areas, stay alert."}];
+const COL={ws:"#2e8b57",wu:"#c0392b",sh:"#1f6feb",hg:"#e8a317"};
+let SEC=[{n:{bn:"সেক্টর ১",en:"Sector 1"},b:[[23.68,90.37],[23.73,90.42]]},{n:{bn:"সেক্টর ২",en:"Sector 2"},b:[[23.68,90.42],[23.73,90.47]]},{n:{bn:"সেক্টর ৩",en:"Sector 3"},b:[[23.73,90.37],[23.78,90.47]]}];
+const TEAM={n:{bn:"টিম অগ্রদূত",en:"Team Agradoot"},lead:{bn:"রাহাত করিম",en:"Rahat Karim"},m:7,sec:2};
+let pts=[{id:1,k:"ws",lat:23.70,lng:90.39,n:{bn:"মসজিদের পাশের নলকূপ",en:"Tube well beside the mosque"}},
+{id:2,k:"wu",lat:23.71,lng:90.44,n:{bn:"স্কুলের পুকুর (আর্সেনিক সন্দেহ)",en:"School pond (arsenic suspected)"}},
+{id:3,k:"sh",lat:23.75,lng:90.40,n:{bn:"সরকারি প্রাথমিক বিদ্যালয়",en:"Government primary school"}},
+{id:4,k:"hg",lat:23.76,lng:90.45,n:{bn:"বাঁধের উঁচু অংশ",en:"Raised embankment"}}];
+let reqs=[{id:1,type:"med",note:"",lat:23.755,lng:90.41,ph:"01711000000",loc:"",done:false}];
+let lang=ls.g("lang")||"bn",theme=ls.g("theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"),vol=false,add=false,cur=null,nid=100,me=null;
+/* BACKEND: paste your Supabase project URL and PUBLIC anon key below (never the secret key). Empty = demo mode. */
+const SB_URL="",SB_KEY="";
+const sb=SB_URL&&window.supabase?supabase.createClient(SB_URL,SB_KEY):null;
+const chk=r=>{if(r.error)toast(t("err"))};
+if(sb){pts=[];reqs=[]}
+const mapReq=x=>({id:x.id,type:x.type,note:x.note||"",lat:x.lat,lng:x.lng,ph:x.phone||"",loc:x.place||"",done:x.status=="helped"});
+async function refreshReq(){const r=await sb.from("help_requests").select("*").neq("status","false").order("created_at",{ascending:false});if(r.data){reqs=r.data.map(mapReq);ui()}}
+async function loadVol(){const u=(await sb.auth.getUser()).data.user;if(!u)return false;
+const p=await sb.from("profiles").select("*").eq("id",u.id).single();if(!p.data)return false;me=p.data;
+const [s,tm,mb]=await Promise.all([sb.from("sectors").select("*"),me.team_id?sb.from("teams").select("*").eq("id",me.team_id).single():{data:null},me.team_id?sb.from("profiles").select("id,name").eq("team_id",me.team_id):{data:[]}]);
+SEC=(s.data||[]).map(x=>({id:x.id,n:{bn:x.name_bn,en:x.name_en},b:[[x.s,x.w],[x.n,x.e]]}));
+TEAM.sec=Math.max(0,SEC.findIndex(x=>x.id==me.sector_id));
+if(tm.data){const ld=(mb.data||[]).find(m=>m.id==tm.data.leader_id),ln=ld?ld.name:"-";TEAM.n={bn:tm.data.name_bn,en:tm.data.name_en};TEAM.lead={bn:ln,en:ln};TEAM.m=(mb.data||[]).length}
+await refreshReq();return true}
+async function loadPub(){const [p,a]=await Promise.all([sb.from("map_points").select("*"),sb.from("alerts").select("*").order("created_at",{ascending:false}).limit(5)]);
+if(p.data)pts=p.data.map(r=>({id:r.id,k:r.kind,lat:r.lat,lng:r.lng,n:r.name}));
+if(a.data)ALERTS=a.data.map(x=>({s:x.severity,bn:x.text_bn,en:x.text_en||x.text_bn,src:x.source,t:new Date(x.created_at).toLocaleString(lang=="bn"?"bn-BD":"en-GB")}));
+ui();if((await sb.auth.getSession()).data.session&&await loadVol()){vol=true;ui()}}
+setInterval(()=>{if(sb&&vol)refreshReq()},30000);
+const t=k=>T[lang][k]||k,nm=p=>typeof p.n=="string"?p.n:p.n[lang];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const map=L.map("map").setView([23.73,90.42],12);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
+const lay=L.layerGroup().addTo(map);
+function toast(m){const e=$("#ts");e.textContent=m;e.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display="none",4000)}
+function draw(){
+lay.clearLayers();
+if(vol)SEC.forEach((s,i)=>L.rectangle(s.b,{color:i==TEAM.sec?"#e8a317":"#7a8c99",weight:i==TEAM.sec?3:1,fillOpacity:i==TEAM.sec?.12:.04}).bindTooltip(s.n[lang],{permanent:true,direction:"center"}).addTo(lay));
+pts.forEach(p=>{let h="<b>"+esc(nm(p))+"</b><br>"+t(p.k);
+if(vol)h+='<br><select onchange="setK('+p.id+',this.value)">'+["ws","wu","sh","hg"].map(k=>'<option value="'+k+'"'+(k==p.k?" selected":"")+">"+t(k)+"</option>").join("")+'</select> <button onclick="delP('+p.id+')">'+t("del")+"</button>";
+L.circleMarker([p.lat,p.lng],{radius:10,color:"#fff",weight:2,fillColor:COL[p.k],fillOpacity:1}).bindPopup(h).addTo(lay)});
+if(vol)reqs.filter(r=>!r.done).forEach(r=>L.circleMarker([r.lat,r.lng],{radius:9,color:"#fff",weight:2,fillColor:"#8e24aa",fillOpacity:1}).bindPopup(t(r.type)).addTo(lay));
+}
+function setK(id,k){pts.find(p=>p.id==id).k=k;if(sb)sb.from("map_points").update({kind:k}).eq("id",id).then(chk);draw()}
+function delP(id){pts=pts.filter(p=>p.id!=id);if(sb)sb.from("map_points").delete().eq("id",id).then(chk);map.closePopup();draw()}
+function markH(id){reqs.find(r=>r.id==id).done=true;if(sb)sb.from("help_requests").update({status:"helped",handled_by:me&&me.id,handled_at:new Date().toISOString()}).eq("id",id).then(chk);ui()}
+function ui(){
+document.documentElement.lang=lang;document.title=t("name");
+$$("[data-i]").forEach(e=>e.textContent=t(e.dataset.i));$$("[data-p]").forEach(e=>e.placeholder=t(e.dataset.p));
+$("#lb").textContent=lang=="bn"?"English":"বাংলা";$("#lb").setAttribute("aria-label",lang=="bn"?"Switch to English":"বাংলায় দেখুন");
+$("#tb").textContent=theme=="dark"?"☀":"☾";$("#tb").setAttribute("aria-label",theme=="dark"?(lang=="bn"?"লাইট মোড":"Light mode"):(lang=="bn"?"ডার্ক মোড":"Dark mode"));
+$("#al").innerHTML=ALERTS.map(a=>'<div class="a '+a.s+'">⚠ '+esc(a[lang])+(a.src?' <span class="dm">'+esc(a.src)+" · "+esc(a.t)+"</span>":"")+"</div>").join("");
+$("#lg").innerHTML=["ws","wu","sh","hg"].map(k=>'<div><span class="sw" style="background:'+COL[k]+'"></span>'+t(k)+"</div>").join("");
+$("#nt").innerHTML=["ws","wu","sh","hg"].map(k=>'<option value="'+k+'">'+t(k)+"</option>").join("");
+$("#pv").hidden=vol;$("#vp").hidden=!vol;
+$("#vs").textContent=SEC[TEAM.sec]?SEC[TEAM.sec].n[lang]:"-";
+$("#vt").textContent=TEAM.n[lang]+" · "+t("leader")+": "+TEAM.lead[lang]+" · "+TEAM.m+" "+t("mem");
+$("#ah").textContent=add?t("addHint"):"";
+if(sb){$("#bl").textContent=t("login").replace(/ \(.*\)/,"");$("[data-i=demo]").hidden=true}
+$("#rl").innerHTML=reqs.map(r=>'<div class="rq"><b>'+t(r.type)+"</b>"+(r.note?" — "+esc(r.note):"")+"<small>"+t("shared")+" · "+(r.ph?esc(r.ph):t("noPh"))+(r.loc?" · "+esc(r.loc):"")+"</small>"+(r.done?'<span class="dm">'+t("done")+"</span>":'<button class="pb" style="margin-top:6px" onclick="markH('+r.id+')">'+t("mark")+"</button>")+"</div>").join("")||'<div class="dm">'+t("none")+"</div>";
+if(cur)$("#ls").textContent=t("locOk");
+const nf=n=>n.toLocaleString(lang=="bn"?"bn-BD":"en",{minimumIntegerDigits:2});
+["ws","wu","sh","hg"].forEach((k,i)=>{$("#sl"+i).textContent=t(k);$("#s"+i).textContent=nf(pts.filter(p=>p.k==k).length)});
+$("#fl").innerHTML=["all","ws","wu","sh","hg"].map(k=>'<button class="chip'+(k==flt?" on":"")+'" data-f="'+k+'">'+t(k)+"</button>").join("");
+const shw=pts.filter(p=>flt=="all"||p.k==flt);$("#cnt").textContent=nf(shw.length);
+$("#pl").innerHTML=shw.map(p=>'<article class="it"><span class="cat '+p.k+'">'+t(p.k)+"</span><h3>"+esc(nm(p))+'</h3><button class="sm" data-g="'+p.id+'">'+t("viewMap")+"</button></article>").join("")||'<div class="dm" style="padding:16px 0">'+t("noPts")+"</div>";
+draw();
+}
+$("#lb").onclick=()=>{lang=lang=="bn"?"en":"bn";ls.s("lang",lang);ui()};
+$("#tb").onclick=()=>{theme=theme=="dark"?"light":"dark";ls.s("theme",theme);document.documentElement.dataset.theme=theme;ui()};
+const enter=()=>{vol=true;ui();if(SEC[TEAM.sec])map.fitBounds(SEC[TEAM.sec].b)};
+$("#bl").onclick=()=>{if(!sb)return enter();$("#le").textContent="";$("#ld").showModal()};
+$("#lc").onclick=()=>$("#ld").close();
+$("#ls2").onclick=async()=>{const r=await sb.auth.signInWithPassword({email:$("#lm").value.trim(),password:$("#lp").value});
+if(r.error){$("#le").textContent=t("loginErr");return}
+if(await loadVol()){$("#lp").value="";$("#ld").close();enter()}else{$("#le").textContent=t("noRole");await sb.auth.signOut()}};
+$("#bo").onclick=()=>{if(sb){sb.auth.signOut();reqs=[];me=null}vol=false;add=false;ui()};
+$("#ba").onclick=()=>{add=true;ui()};
+map.on("click",e=>{if(!vol||!add)return;const n=prompt(t("asName"));if(n){const row={k:$("#nt").value,lat:e.latlng.lat,lng:e.latlng.lng,n:n};
+if(sb){sb.from("map_points").insert({kind:row.k,lat:row.lat,lng:row.lng,name:n}).select().single().then(r=>{if(r.error)return toast(t("err"));row.id=r.data.id;pts.push(row);ui()})}else{row.id=nid++;pts.push(row)}}add=false;ui()});
+$$('input[name=ht]').forEach(r=>r.onchange=()=>$("#hn").hidden=document.querySelector("input[name=ht]:checked").value!="other");
+$("#bh").onclick=()=>{$("#he").textContent="";$("#hd").showModal()};
+$("#hc").onclick=()=>$("#hd").close();$("#vc").onclick=()=>$("#vd").close();
+$("#gl").onclick=()=>{$("#he").textContent="";navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>{cur={lat:p.coords.latitude,lng:p.coords.longitude};$("#ls").textContent=t("locOk")},()=>$("#he").textContent=t("locFail"),{enableHighAccuracy:true,timeout:15000}):$("#he").textContent=t("locFail")};
+$("#hs").onclick=()=>{const ty=document.querySelector("input[name=ht]:checked").value,note=$("#hn").value.trim();
+if(!cur){$("#he").textContent=t("locNeed");return}
+if(ty=="other"&&!note){$("#he").textContent=t("otherNeed");return}
+const row={type:ty,note:ty=="other"?note:"",lat:cur.lat,lng:cur.lng,ph:$("#hp").value.trim(),loc:$("#lt").value.trim(),done:false},fin=()=>{$("#hd").close();toast(t("sent"));ui()};
+if(!sb){row.id=nid++;reqs.push(row);return fin()}
+sb.from("help_requests").insert({type:row.type,note:row.note,lat:row.lat,lng:row.lng,phone:row.ph||null,place:row.loc||null}).then(r=>r.error?($("#he").textContent=t("err")):fin())};
+$("#bv").onclick=()=>{$("#ve").textContent="";$("#vd").showModal()};
+$("#vs2").onclick=()=>{const g=i=>$(i).value.trim();
+if(!g("#vn")||!g("#va")||!g("#vph")||!$("#vf").files.length){$("#ve").textContent=t("vErr");return}
+if(!/^(\+?88)?01[3-9]\d{8}$/.test(g("#vph"))){$("#ve").textContent=t("pErr");return}
+const f=$("#vf").files[0],done=()=>{$("#vd").close();toast(t("vSent"))};
+if(!sb)return done();
+const path=crypto.randomUUID()+"."+(f.name.split(".").pop()||"jpg").slice(0,5);
+sb.storage.from("ids").upload(path,f,{contentType:f.type}).then(u=>{if(u.error)throw u.error;return sb.from("volunteer_applications").insert({full_name:g("#vn"),address:g("#va"),phone:g("#vph"),email:g("#vm")||null,doc_type:$("#vdt").value,doc_path:path})}).then(r=>{if(r.error)throw r.error;done()}).catch(()=>$("#ve").textContent=t("err"))};
+$("#fl").onclick=e=>{const b=e.target.closest("[data-f]");if(b){flt=b.dataset.f;ui()}};
+$("#pl").onclick=e=>{const b=e.target.closest("[data-g]");if(!b)return;const p=pts.find(x=>x.id==b.dataset.g);if(p){map.setView([p.lat,p.lng],15);$("#map").scrollIntoView({behavior:"smooth",block:"center"})}};
+document.documentElement.dataset.theme=theme;ui();if(sb)loadPub();
+</script>
+</body>
+</html>
